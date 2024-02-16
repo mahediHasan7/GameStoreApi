@@ -4,10 +4,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GameStore.Api.Repositories;
 
-public class EntityFrameworkGamesRepository(GameStoreContext dbContext) : IGameRepository
+public class EntityFrameworkGamesRepository : IGameRepository
 {
 
-    private readonly GameStoreContext dbContext = dbContext;
+    private readonly GameStoreContext dbContext;
+
+    // The logger field is typically initialized via dependency injection in the constructor of the EntityFrameworkGamesRepository class. Once initialized, it can be used to create log messages at various levels (e.g., Information, Warning, Error) throughout the class.
+    private readonly ILogger<EntityFrameworkGamesRepository> logger;
+
+    public EntityFrameworkGamesRepository(
+        GameStoreContext dbContext,
+        ILogger<EntityFrameworkGamesRepository> logger)
+    {
+        this.dbContext = dbContext;
+        this.logger = logger;
+    }
 
     public async Task<IEnumerable<Game>> GetAllAsync()
     {
@@ -23,6 +34,8 @@ public class EntityFrameworkGamesRepository(GameStoreContext dbContext) : IGameR
     {
         dbContext.Games.Add(game);
         await dbContext.SaveChangesAsync();
+
+        logger.LogInformation("Game {GameId}:{GameName} was created", game.Id, game.Name);
     }
 
     public async Task UpdateAsync(Game updatedGame)
