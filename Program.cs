@@ -1,3 +1,4 @@
+using GameStore.Api.Authorization;
 using GameStore.Api.Data;
 using GameStore.Api.Endpoints;
 
@@ -8,7 +9,9 @@ builder.Services.AddRepositories(builder.Configuration);
 
 // add authentication and authorization
 builder.Services.AddAuthentication().AddJwtBearer();
-builder.Services.AddAuthorization();
+
+// Add authorization policies
+builder.Services.AddGameAuthorization();
 
 var app = builder.Build();
 
