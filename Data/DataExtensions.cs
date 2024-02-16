@@ -14,6 +14,11 @@ public static class DataExtensions
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<GameStoreContext>();
     await dbContext.Database.MigrateAsync();
+
+    var logger = services.GetRequiredService<ILoggerFactory>()
+                         .CreateLogger("DB Initializer");
+
+    logger.LogInformation(5, "Start of DB Initialization");
   }
 
   public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration configuration)
