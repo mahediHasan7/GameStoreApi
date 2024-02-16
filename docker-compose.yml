@@ -9,6 +9,8 @@ services:
       - '1433:1433'
     volumes:
       - sqlvolume:/var/opt/mssql
+    container_name: mssql
+
     restart: always
 
 volumes:
