@@ -6,6 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure dependency injection for the application
 builder.Services.AddRepositories(builder.Configuration);
 
+// add authentication and authorization
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Automatically migrate the database
