@@ -8,7 +8,7 @@ namespace GameStore.Api.Data;
 public static class DataExtensions
 {
 
-  public static async Task InitializeDb(this IServiceProvider serviceProvider)
+  public static async Task InitializeDbAsync(this IServiceProvider serviceProvider)
   {
     using var scope = serviceProvider.CreateScope();
     var services = scope.ServiceProvider;
