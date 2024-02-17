@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using GameStore.Api.Authorization;
 using GameStore.Api.Data;
 using GameStore.Api.Endpoints;
@@ -13,14 +14,6 @@ builder.Services.AddAuthentication().AddJwtBearer();
 // Add authorization policies
 builder.Services.AddGameAuthorization();
 
-// builder.Logging.AddJsonConsole(options =>
-// {
-//   options.JsonWriterOptions = new()
-//   {
-//     Indented = true
-//   };
-// });
-
 // Add HTTP logging services
 builder.Services.AddHttpLogging(options =>
 {
@@ -28,6 +21,29 @@ builder.Services.AddHttpLogging(options =>
 });
 
 var app = builder.Build();
+
+// add a middleware to the pipeline to handle exceptions
+app.Use(async (context, next) =>
+{
+  var stopWatch = new Stopwatch();
+  try
+  {
+    stopWatch.Start();
+
+    await next(context);
+  }
+  finally
+  {
+    stopWatch.Stop();
+    var elapsedMillisecond = stopWatch.ElapsedMilliseconds;
+
+    app.Logger.LogInformation(
+      "{RequestMethod} {RequestPath} request took {ElapsedMilliseconds}ms to complete",
+      context.Request.Method, context.Request.Path, elapsedMillisecond
+    );
+  }
+
+});
 
 // Automatically migrate the database
 await app.Services.InitializeDbAsync();

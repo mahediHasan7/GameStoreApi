@@ -20,14 +20,22 @@ public static class GameEndpoints
     {
       try
       {
-        return (await repository.GetAllAsync()).Select(game => game.AsDto());
+        return Results.Ok((await repository.GetAllAsync()).Select(game => game.AsDto()));
       }
       catch (Exception ex)
       {
         var logger = loggerFactory.CreateLogger("Game Endpoints");
         logger.LogError(ex, "An error occurred while getting all games on machine {Machine}. TraceId: {TraceId}", Environment.MachineName, Activity.Current?.TraceId);
 
-        throw;
+        return Results.Problem(
+          "An error occurred while getting all games",
+          statusCode: StatusCodes.Status500InternalServerError,
+          title: "An error occurred while getting all games",
+          extensions: new Dictionary<string, object?>{
+            {"TraceId", Activity.Current?.TraceId.ToString()},
+            {"Machine", Environment.MachineName.ToString()},
+            {"Exception", ex.ToString()}}
+          );
       }
 
     });
