@@ -7,7 +7,7 @@ public class RequestTimingMiddleware(RequestDelegate next, ILogger<RequestTiming
     private readonly RequestDelegate next = next;
     private readonly ILogger<RequestTimingMiddleware> logger = logger;
 
-    // has to be same as the following convention
+    //! has to be same as the following convention
     public async Task InvokeAsync(HttpContext context)
     {
         var stopWatch = new Stopwatch();

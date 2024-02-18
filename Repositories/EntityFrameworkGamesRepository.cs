@@ -24,8 +24,6 @@ public class EntityFrameworkGamesRepository : IGameRepository
     // Get
     public async Task<IEnumerable<Game>> GetAllAsync()
     {
-        throw new InvalidOperationException("This method is not implemented");
-
         // ToListAsync() method is an Entity Framework extension method that asynchronously enumerates the query results and sends them to a list.
         return await dbContext.Games.AsNoTracking().ToListAsync();
     }
@@ -33,7 +31,6 @@ public class EntityFrameworkGamesRepository : IGameRepository
     // Get{id}
     public async Task<Game?> GetAsync(int id)
     {
-        throw new InvalidOperationException("This method is not implemented");
         return await dbContext.Games.FindAsync(id);
     }
 
