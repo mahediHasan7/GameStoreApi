@@ -15,6 +15,13 @@ builder.Services.AddAuthentication().AddJwtBearer();
 // Add authorization policies
 builder.Services.AddGameAuthorization();
 
+// add versioning to the application (from nuget package Asp.Versioning.Http)
+builder.Services.AddApiVersioning(options =>
+{
+  options.DefaultApiVersion = new(1.0);
+  options.AssumeDefaultVersionWhenUnspecified = true;
+});
+
 // Add HTTP logging services
 builder.Services.AddHttpLogging(options =>
 {

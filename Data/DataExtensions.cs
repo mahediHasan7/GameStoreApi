@@ -32,7 +32,4 @@ public static class DataExtensions
 
     return services;
   }
-
-  // to test git branching
-
 }
