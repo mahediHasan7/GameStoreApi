@@ -1,4 +1,5 @@
 using GameStore.Api.Authorization;
+using GameStore.Api.Cors;
 using GameStore.Api.Data;
 using GameStore.Api.Endpoints;
 using GameStore.Api.ErrorHandling;
@@ -21,6 +22,10 @@ builder.Services.AddApiVersioning(options =>
   options.DefaultApiVersion = new(1.0);
   options.AssumeDefaultVersionWhenUnspecified = true;
 });
+
+
+// Configure CORS policy
+builder.Services.ConfigureCors(builder.Configuration);
 
 // Add HTTP logging services
 builder.Services.AddHttpLogging(options =>
@@ -45,7 +50,7 @@ app.UseHttpLogging();
 // Map the game endpoints for the application
 app.MapGameEndPoints();
 
-
+app.UseCors();
 
 // Start the application
 app.Run();
