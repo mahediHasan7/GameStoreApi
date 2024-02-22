@@ -11,7 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRepositories(builder.Configuration);
 
 // add authentication and authorization
-builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthentication()
+                .AddJwtBearer()
+                .AddJwtBearer("Auth0");
 
 // Add authorization policies
 builder.Services.AddGameAuthorization();
