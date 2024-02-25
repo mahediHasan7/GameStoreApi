@@ -21,7 +21,8 @@ public static class CorsExtensions
                 // now setting up all three into the corsBuilder
                 corsBuilder.WithOrigins(allowedOrigin) //Access-Control-Allow-Origin
                          .AllowAnyHeader() //Access-Control-Allow-Headers
-                         .AllowAnyMethod(); //Access-Control-Allow-Methods
+                         .AllowAnyMethod() //Access-Control-Allow-Methods
+                         .WithExposedHeaders("X-Pagination");
             });
         });
 

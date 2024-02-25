@@ -3,6 +3,7 @@ using GameStore.Api.Authorization;
 using GameStore.Api.Dto;
 using GameStore.Api.Entities;
 using GameStore.Api.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GameStore.Api.Endpoints;
 
@@ -25,9 +26,16 @@ public static class GameEndpoints
     // V1 endpoints
 
     // GET
-    group.MapGet("/", async (IGameRepository repository, ILoggerFactory loggerFactory) =>
+    group.MapGet("/", async (
+    IGameRepository repository,
+    ILoggerFactory loggerFactory,
+    [AsParameters] GetGamesRequestDto getGamesRequestDto,
+    HttpContext http) =>
     {
-      return Results.Ok((await repository.GetAllAsync()).Select(game => game.AsDtoV1()));
+      var totalCount = await repository.CountGamesAsync();
+      http.Response.AddPaginationHeader(totalCount, getGamesRequestDto.PageSize);
+
+      return Results.Ok((await repository.GetAllAsync(getGamesRequestDto.PageNumber, getGamesRequestDto.PageSize)).Select(game => game.AsDtoV1()));
     })
     .MapToApiVersion(1.0);
 
@@ -50,26 +58,31 @@ public static class GameEndpoints
     // V2 endpoints
 
     // GET
-    group.MapGet("/", async (IGameRepository repository, ILoggerFactory loggerFactory) =>
+    group.MapGet("/", async (IGameRepository repository, ILoggerFactory loggerFactory, [AsParameters] GetGamesRequestDto getGamesRequestDto, HttpContext http) =>
     {
-      return Results.Ok((await repository.GetAllAsync()).Select(game => game.AsDtoV2()));
+
+      var totalCount = await repository.CountGamesAsync();
+      http.Response.AddPaginationHeader(totalCount, getGamesRequestDto.PageSize);
+
+      return Results.Ok((await repository.GetAllAsync(getGamesRequestDto.PageNumber, getGamesRequestDto.PageSize))
+                                         .Select(game => game.AsDtoV2()));
     })
     .MapToApiVersion(2.0);
 
     // GET SINGLE
     group.MapGet("/{id}", async (IGameRepository repository, int id) =>
-    {
-      Game? game = await repository.GetAsync(id);
-      if (game is null)
       {
-        return Results.NotFound();
-      }
+        Game? game = await repository.GetAsync(id);
+        if (game is null)
+        {
+          return Results.NotFound();
+        }
 
-      return Results.Ok(game.AsDtoV2());
-    })
-    .WithName(GetGameEndpointNameV2)
-    .RequireAuthorization(Policies.ReadAccess)
-    .MapToApiVersion(2.0);
+        return Results.Ok(game.AsDtoV2());
+      })
+      .WithName(GetGameEndpointNameV2)
+      .RequireAuthorization(Policies.ReadAccess)
+      .MapToApiVersion(2.0);
 
     // POST
     group.MapPost("/", async (IGameRepository repository, CreateGameDto gameDto) =>

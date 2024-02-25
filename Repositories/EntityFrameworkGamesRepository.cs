@@ -22,10 +22,15 @@ public class EntityFrameworkGamesRepository : IGameRepository
     }
 
     // Get
-    public async Task<IEnumerable<Game>> GetAllAsync()
+    public async Task<IEnumerable<Game>> GetAllAsync(int pageNumber, int pageSize)
     {
-        // ToListAsync() method is an Entity Framework extension method that asynchronously enumerates the query results and sends them to a list.
-        return await dbContext.Games.AsNoTracking().ToListAsync();
+        var skipCount = (pageNumber - 1) * pageSize;
+        return await dbContext.Games
+                                    .OrderBy(game => game.Id)
+                                    .Skip(skipCount)
+                                    .Take(pageSize)
+                                    .AsNoTracking()
+                                    .ToListAsync();
     }
 
     // Get{id}
@@ -55,5 +60,11 @@ public class EntityFrameworkGamesRepository : IGameRepository
     {
         await dbContext.Games.Where(game => game.Id == id)
                        .ExecuteDeleteAsync();
+    }
+
+    // Count total games
+    public async Task<int> CountGamesAsync()
+    {
+        return await dbContext.Games.CountAsync();
     }
 }
