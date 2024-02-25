@@ -16,7 +16,7 @@ public static class AuthorizationExtensions
                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, "Auth0"));
 
             options.AddPolicy(Policies.WriteAccess, builder =>
-                builder.RequireClaim("score", "games:write")
+                builder.RequireClaim("scope", "games:write")
                        .RequireRole("Admin")
                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, "Auth0"));
         });

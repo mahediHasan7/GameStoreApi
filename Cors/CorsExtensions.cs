@@ -2,6 +2,7 @@ namespace GameStore.Api.Cors;
 
 public static class CorsExtensions
 {
+    private const string allowedOriginSetting = "AllowedOrigin";
 
     public static IServiceCollection ConfigureCors(this IServiceCollection service, IConfiguration configuration)
     {
@@ -15,7 +16,7 @@ public static class CorsExtensions
                 // Access-Control-Allow-Methods: POST
 
                 // First, setting up the Origin
-                var allowedOrigin = configuration["AllowedOrigin"] ?? throw new InvalidOperationException("AllowedOrigin is not set in appsettings.json file");
+                var allowedOrigin = configuration[allowedOriginSetting] ?? throw new InvalidOperationException("AllowedOrigin is not set in appsettings.json file");
 
                 // now setting up all three into the corsBuilder
                 corsBuilder.WithOrigins(allowedOrigin) //Access-Control-Allow-Origin
