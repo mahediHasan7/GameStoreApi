@@ -54,6 +54,8 @@ builder.Services.AddSingleton<IUploadImage>(
   )
 );
 
+builder.Logging.AddAzureWebAppDiagnostics();
+
 var app = builder.Build();
 
 // add built in exception handler middleware
