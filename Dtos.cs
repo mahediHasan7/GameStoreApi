@@ -44,3 +44,5 @@ public record UpdateGameDto(
     DateTime ReleaseDate,
     [Required][Url] string ImageUri
 );
+
+public record UploadImageDto(string BlobUri);
