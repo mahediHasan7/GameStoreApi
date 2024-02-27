@@ -4,7 +4,8 @@ namespace GameStore.Api.Dto;
 
 public record GetGamesRequestDto(
     int PageNumber = 1,
-    int PageSize = 5
+    int PageSize = 5,
+    string? Filter = null
  );
 
 public record GameDtoV1(

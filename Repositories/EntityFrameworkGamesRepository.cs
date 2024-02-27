@@ -1,6 +1,7 @@
 using GameStore.Api.Data;
 using GameStore.Api.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GameStore.Api.Repositories;
 
@@ -12,7 +13,6 @@ public class EntityFrameworkGamesRepository : IGameRepository
     // The logger field is typically initialized via dependency injection in the constructor of the EntityFrameworkGamesRepository class. Once initialized, it can be used to create log messages at various levels (e.g., Information, Warning, Error) throughout the class.
     private readonly ILogger<EntityFrameworkGamesRepository> logger;
 
-    // Constructor
     public EntityFrameworkGamesRepository(
         GameStoreContext dbContext,
         ILogger<EntityFrameworkGamesRepository> logger)
@@ -22,15 +22,17 @@ public class EntityFrameworkGamesRepository : IGameRepository
     }
 
     // Get
-    public async Task<IEnumerable<Game>> GetAllAsync(int pageNumber, int pageSize)
+    public async Task<IEnumerable<Game>> GetAllAsync(int pageNumber, int pageSize, string? filter)
     {
+        var query = QueryGamesByFilter(filter);
+
         var skipCount = (pageNumber - 1) * pageSize;
-        return await dbContext.Games
-                                    .OrderBy(game => game.Id)
-                                    .Skip(skipCount)
-                                    .Take(pageSize)
-                                    .AsNoTracking()
-                                    .ToListAsync();
+        return await query
+                        .OrderBy(game => game.Id)
+                        .Skip(skipCount)
+                        .Take(pageSize)
+                        .AsNoTracking()
+                        .ToListAsync();
     }
 
     // Get{id}
@@ -63,8 +65,22 @@ public class EntityFrameworkGamesRepository : IGameRepository
     }
 
     // Count total games
-    public async Task<int> CountGamesAsync()
+    public async Task<int> CountGamesAsync(string? filter)
     {
-        return await dbContext.Games.CountAsync();
+        var query = QueryGamesByFilter(filter);
+
+        return await query.CountAsync();
+    }
+
+    private IQueryable<Game> QueryGamesByFilter(string? filter)
+    {
+        IQueryable<Game> query = dbContext.Games;
+
+        if (!string.IsNullOrEmpty(filter))
+        {
+            query = query.Where(game => game.Name.Contains(filter) || game.Genre.Contains(filter));
+        }
+
+        return query;
     }
 }

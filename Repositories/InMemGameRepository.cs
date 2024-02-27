@@ -32,11 +32,12 @@ public class InMemGameRepository : IGameRepository
         },
     ];
 
-  public async Task<IEnumerable<Game>> GetAllAsync(int pageNumber, int pageSize)
+  public async Task<IEnumerable<Game>> GetAllAsync(int pageNumber, int pageSize, string? filter)
   {
 
     var skipCount = (pageNumber - 1) * pageSize;
     return await Task.FromResult(games
+                                    .Where(game => game.Name.Contains(filter ?? " "))
                                     .OrderBy(game => game.Id)
                                     .Skip(skipCount)
                                     .Take(pageSize));
@@ -73,9 +74,10 @@ public class InMemGameRepository : IGameRepository
     await Task.CompletedTask;
   }
 
-  public async Task<int> CountGamesAsync()
+  public async Task<int> CountGamesAsync(string? filter)
   {
-    return await Task.FromResult(games.Count);
+    return await Task.FromResult(games
+    .Where(game => game.Name.Contains(filter ?? " "))
+    .Count());
   }
-
 }
